@@ -1,0 +1,135 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+myenv/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Pytest
+.pytest_cache/
+
+# Type checker
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDEs and editors
+.vscode/
+.idea/
+.spyderproject
+.spyproject
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# dotenv
+.env.*
+
+# images
+background/
+background.zip
+eval/
+hand_written_eval/
+khmerst-main/
+khob_eval/
+legal document/
+output/
+printed_eval/
+scene_text_data/
+surya/
+temp_crops/
+test_img/
+surya_output/
+logs/
+aws_code/
+models/
+
+# Files
+loss_curve.png
+inference_results.txt
+test_augment.py 
+tesseract_ocr.py 
+sort_height.py 
+sort_folder_legal.py 
+scene_text.py 
+run_surya.py 
+run_surya_folder.py 
+rec_khmer_train.yml 
+real_data_sort.py 
+printed_eval_dataset.py 
+plot.ipynb 
+padding.py 
+normalizer.py 
+model.py 
+khob_eval.py 
+khmerocr_epoch50.pth 
+khmerocr_epoch100.pth
+khmer_template.py 
+khmer_dictionary.txt 
+Khmer_config.yaml 
+annotate.py 
+augmentation.py 
+chunk.py 
+chunking.py 
+clean_labels.py 
+clean_train_log.py 
+generate.py 
+handwritting.py 
+inference_test.py
