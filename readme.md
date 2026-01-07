@@ -98,8 +98,8 @@ TABLE 3: Example of CNN-Transformer vs Tesseract OCR compared with the ground tr
 | Instance | Ground-Truth | VGG-Transformer | ResNet-Transformer | Tesseract-OCR |
 | :---: | :--- | :--- | :--- | :--- |
 | <img src="./assets/s_case_1.png" width="200"> | រាជរដ្ឋាភិបាលកម្ពុជា | រាជរដ្ឋាភិបាលកម្ពុជា | រាជរដ្ឋាភិបាលកម្ពុជា | រាជរដ្ឋា<span style="color:red">គិធា</span>លកម្ពុជា |
-| <img src="./assets/s_case_2.png" width="200"> | ព្រះរាជាណាចក្រកម្ពុ<br>ជា | ព្រះរាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលកម្ពុជា | ព្រះរាជាណាច<span style="color:red">ត្រ</span>កម្ពុ<br>ជា |
-| <img src="./assets/s_case_3.png" width="200"> | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<span style="color:red">៖</span><br>រាជាណាចក្រកម្ពុជា |
+| <img src="./assets/s_case_2.png" width="200"> | ព្រះរាជាណាចក្រកម្ពុ<br>ជា | ព្រះរាជាណាចក្រកម្ពុជា | ព្រះរាជាណាចក្រកម្ពុជា | ព្រះរាជាណាច<span style="color:red">ត្រ</span>កម្ពុ<br>ជា |
+| <img src="./assets/s_case_3.png" width="200"> | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<span style="color:red">៖</span><br>រាជាណាចក្រកម្ពុជា |
 | <img src="./assets/s_case_4.png" width="200"> | 011048599 | 011048599 | 011048599 | 0110<span style="color:red">H</span>85<span style="color:red">6</span>9<span style="color:red">:</span> |
 | <img src="./assets/s_case_5.png" width="200"> | ឈុនហៀង | ឈុនហៀង | ឈុនហៀង | <span style="color:red">_</span>ឈុនហៀង |
 
