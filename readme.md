@@ -169,3 +169,27 @@ Below is the original document image and the result of the editable PDF with lay
   <img src="khmer_document_4.jpg" width="40%" />
   <img src="./assets/pdf_convert.png" width="45%" /> 
 </p>
+
+---
+## References
+
+1. **An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale**  
+   *Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, et al.*  
+   ICLR 2021.  
+   [arXiv:2010.11929](https://arxiv.org/abs/2010.11929)
+
+2. **TrOCR: Transformer-based Optical Character Recognition with Pre-trained Models**  
+   *Minghao Li, Tengchao Lv, Lei Cui, Yijuan Lu, Dinei Florencio, Cha Zhang, Zhoujun Li, Furu Wei.*  
+   AAAI 2023.  
+   [arXiv:2109.10282](https://arxiv.org/abs/2109.10282)
+
+3. **Toward a Low-Resource Non-Latin-Complete Baseline: An Exploration of Khmer Optical Character Recognition**  
+   *R. Buoy, M. Iwamura, S. Srun and K. Kise.*  
+   IEEE Access, vol. 11, pp. 128044-128060, 2023.  
+   [DOI: 10.1109/ACCESS.2023.3332361](https://doi.org/10.1109/ACCESS.2023.3332361)
+
+4. **Balraj98.** (2018). *Stanford background dataset* [Data set]. Kaggle. https://www.kaggle.com/datasets/balraj98/stanford-background-dataset
+
+5. **EKYC Solutions.** (n.d.). *Khmer OCR benchmark dataset (KHOB)* [Data set]. GitHub. https://github.com/EKYCSolutions/khmer-ocr-benchmark-dataset
+
+6. **Em, H., Valy, D., Gosselin, B., & Kong, P.** (2024). *Khmer text recognition dataset* [Data set]. Kaggle. https://www.kaggle.com/datasets/emhengly/khmer-text-recognition-dataset
