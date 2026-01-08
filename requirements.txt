@@ -6,3 +6,5 @@ datasets
 transformers
 torch
 torchvision
+reportlab
+python-docx
