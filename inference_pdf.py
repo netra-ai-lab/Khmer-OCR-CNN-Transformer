@@ -17,6 +17,7 @@ from reportlab.lib.utils import ImageReader
 
 # Import Inference Class
 from inference import KhmerOCRInference
+from crnn_se_model import KhmerOCR
 
 # ==============================================================================
 # 1. HELPER FUNCTIONS (Geometry & Cropping)
@@ -201,7 +202,7 @@ def generate_clean_pdf(image_path, layout_results, output_path, font_path):
 if __name__ == "__main__":
     # --- CONFIG ---
     IMAGE_PATH = "khmer_document_4.jpg"
-    MODEL_PATH = "./checkpoints/khmerocr_epoch100.pth"
+    MODEL_PATH = "./checkpoints/khmerocr_vgg_lstm_epoch100.pth"
     CHAR2IDX_PATH = "char2idx.json"
     FONT_PATH = "./fonts/KantumruyPro-Regular.ttf"
     
@@ -210,7 +211,7 @@ if __name__ == "__main__":
 
     try:
         # 1. Load OCR Model (Using Class from inference.py)
-        ocr_model = KhmerOCRInference(MODEL_PATH, CHAR2IDX_PATH)
+        ocr_model = KhmerOCRInference(MODEL_PATH, CHAR2IDX_PATH, model_class=KhmerOCR, emb_dim=384)
         
         # 2. Process Image (Layout Analysis + OCR)
         results = run_layout_aware_pipeline(IMAGE_PATH, ocr_model)
