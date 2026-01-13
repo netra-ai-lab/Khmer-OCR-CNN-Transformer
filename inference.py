@@ -4,16 +4,12 @@ from torchvision import transforms
 from PIL import Image
 import json
 import os
-from vgg_model import KhmerOCR 
+from crnn_se_model import KhmerOCR  
 from textline_detection import run_textline_detector
-
-# ==============================================================================
-# 2. HELPER FUNCTIONS & INFERENCE CLASS
-# ==============================================================================
 
 def chunk_image_inference(img_tensor, chunk_width=100, overlap=16):
     """
-    Splits image into chunks. Matches training logic.
+    Splits the tensor into overlapping chunks to handle long text lines.
     """
     C, H, W = img_tensor.shape
     chunks = []
@@ -26,7 +22,6 @@ def chunk_image_inference(img_tensor, chunk_width=100, overlap=16):
         # Pad last chunk if shorter than chunk_width (Pad with 1.0 = White)
         if chunk.shape[2] < chunk_width:
             pad_size = chunk_width - chunk.shape[2]
-            # F.pad: (left, right, top, bottom)
             chunk = F.pad(chunk, (0, pad_size, 0, 0), value=1.0)
 
         chunks.append(chunk)
@@ -34,8 +29,18 @@ def chunk_image_inference(img_tensor, chunk_width=100, overlap=16):
 
     return chunks
 
+# ==============================================================================
+# 2. INFERENCE CLASS
+# ==============================================================================
+
 class KhmerOCRInference:
-    def __init__(self, model_path, char2idx_input, device='cuda'):
+    def __init__(self, 
+                 model_path, 
+                 char2idx_input, 
+                 model_class,      # Pass the class definition (KhmerOCR)
+                 emb_dim=384,      # 256 for your new models
+                 device='cuda'):
+        
         self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
 
         # 1. Load Vocabulary
@@ -53,73 +58,155 @@ class KhmerOCRInference:
         self.pad_idx = self.char2idx.get("<pad>", 0)
 
         # 2. Initialize Model
-        self.model = KhmerOCR(
+        self.model = model_class(
             vocab_size=len(self.char2idx),
             pad_idx=self.pad_idx,
-            emb_dim=384,
+            emb_dim=emb_dim,       
             max_global_len=4096
         )
 
         # 3. Load Weights
-        print(f"⏳ Loading recognition weights from {model_path}...")
+        print(f"⏳ Loading weights from {model_path} (Dim: {emb_dim})...")
         checkpoint = torch.load(model_path, map_location=self.device)
         
-        # Handle state dict
-        if 'model_state_dict' in checkpoint:
-            self.model.load_state_dict(checkpoint['model_state_dict'])
-        else:
-            self.model.load_state_dict(checkpoint)
+        state_dict = checkpoint['model_state_dict'] if 'model_state_dict' in checkpoint else checkpoint
+        
+        # Load weights
+        try:
+            self.model.load_state_dict(state_dict, strict=True)
+        except RuntimeError as e:
+            print(f"⚠️ Strict loading failed (likely due to missing/extra keys). Retrying with strict=False...")
+            self.model.load_state_dict(state_dict, strict=False)
             
         self.model.to(self.device)
         self.model.eval()
 
-        # 4. Transform
         self.transform = transforms.Compose([
             transforms.Grayscale(),
-            transforms.ToTensor(), # 0..1
+            transforms.ToTensor(), 
         ])
 
     def preprocess(self, image_input):
-        # Handle Input Type
         if isinstance(image_input, str):
+            if not os.path.exists(image_input):
+                raise FileNotFoundError(f"Image not found at {image_input}")
             image = Image.open(image_input).convert('L')
         elif isinstance(image_input, Image.Image):
             image = image_input.convert('L')
         else:
             raise ValueError("Input must be a file path or PIL Image.")
 
-        # --- RESIZE TO HEIGHT 48 ---
         target_height = 48
         aspect_ratio = image.width / image.height
         new_width = int(target_height * aspect_ratio)
+        new_width = max(10, new_width) 
+        
         image = image.resize((new_width, target_height), Image.Resampling.BILINEAR)
-        # ---------------------------
-
         img_tensor = self.transform(image) 
+        
+        # Helper function usage (ensure chunk_image_inference is defined)
         chunks = chunk_image_inference(img_tensor, chunk_width=100, overlap=16)
         chunks_norm = [(c - 0.5) / 0.5 for c in chunks]
+        
         return torch.stack(chunks_norm).to(self.device)
 
     def encode_image(self, chunks_tensor):
         with torch.no_grad():
+            # 1. CNN
             f = self.model.cnn(chunks_tensor)
-            p, _ = self.model.patch(f)
+            
+            # 2. Patch
+            patch_out = self.model.patch(f)
+            p = patch_out[0] if isinstance(patch_out, tuple) else patch_out
+
+            # 3. Encoder
             p = p.transpose(0, 1).contiguous()
             enc_out = self.model.enc(p)
             enc_out = enc_out.transpose(0, 1)
 
+            # 4. Merge
             N, L, D = enc_out.shape
             merged_seq = enc_out.reshape(1, N * L, D)
-            memory = merged_seq
-
-            B, T, _ = memory.shape
+            
+            # 5. Global Position
+            B, T, _ = merged_seq.shape
             limit = min(T, self.model.global_pos.size(0))
             pos_emb = self.model.global_pos[:limit, :].unsqueeze(0)
 
             if T > self.model.global_pos.size(0):
-                 memory = memory[:, :limit, :] + pos_emb
+                 memory = merged_seq[:, :limit, :] + pos_emb
             else:
-                 memory = memory + pos_emb
+                 memory = merged_seq + pos_emb
+
+            # ==========================================
+            # 6. AUTO-DETECT BiLSTM (Universal Fix)
+            # ==========================================
+            # Checks if the model has 'context_bilstm' and runs it if it does
+            if hasattr(self.model, 'context_bilstm'):
+                self.model.context_bilstm.flatten_parameters()
+                memory, _ = self.model.context_bilstm(memory)
+
+            return memory
+
+    def preprocess(self, image_input):
+        if isinstance(image_input, str):
+            if not os.path.exists(image_input):
+                raise FileNotFoundError(f"Image not found at {image_input}")
+            image = Image.open(image_input).convert('L')
+        elif isinstance(image_input, Image.Image):
+            image = image_input.convert('L')
+        else:
+            raise ValueError("Input must be a file path or PIL Image.")
+
+        target_height = 48
+        aspect_ratio = image.width / image.height
+        new_width = int(target_height * aspect_ratio)
+        new_width = max(10, new_width) 
+        
+        image = image.resize((new_width, target_height), Image.Resampling.BILINEAR)
+        img_tensor = self.transform(image) 
+        
+        # Helper function usage (ensure chunk_image_inference is defined)
+        chunks = chunk_image_inference(img_tensor, chunk_width=100, overlap=16)
+        chunks_norm = [(c - 0.5) / 0.5 for c in chunks]
+        
+        return torch.stack(chunks_norm).to(self.device)
+
+    def encode_image(self, chunks_tensor):
+        with torch.no_grad():
+            # 1. CNN
+            f = self.model.cnn(chunks_tensor)
+            
+            # 2. Patch
+            patch_out = self.model.patch(f)
+            p = patch_out[0] if isinstance(patch_out, tuple) else patch_out
+
+            # 3. Encoder
+            p = p.transpose(0, 1).contiguous()
+            enc_out = self.model.enc(p)
+            enc_out = enc_out.transpose(0, 1)
+
+            # 4. Merge
+            N, L, D = enc_out.shape
+            merged_seq = enc_out.reshape(1, N * L, D)
+            
+            # 5. Global Position
+            B, T, _ = merged_seq.shape
+            limit = min(T, self.model.global_pos.size(0))
+            pos_emb = self.model.global_pos[:limit, :].unsqueeze(0)
+
+            if T > self.model.global_pos.size(0):
+                 memory = merged_seq[:, :limit, :] + pos_emb
+            else:
+                 memory = merged_seq + pos_emb
+
+            # ==========================================
+            # 6. AUTO-DETECT BiLSTM (Universal Fix)
+            # ==========================================
+            # Checks if the model has 'context_bilstm' and runs it if it does
+            if hasattr(self.model, 'context_bilstm'):
+                self.model.context_bilstm.flatten_parameters()
+                memory, _ = self.model.context_bilstm(memory)
 
             return memory
 
@@ -210,7 +297,7 @@ class KhmerOCRInference:
 def run_full_document_ocr(image_path, model_path, vocab_input):
     
     # 1. Initialize Recognition Model ONCE
-    ocr_model = KhmerOCRInference(model_path, vocab_input)
+    ocr_model = KhmerOCRInference(model_path, vocab_input, model_class=KhmerOCR, emb_dim=384, device='cuda')
     
     print(f"🔍 Running detection on: {image_path}")
     
@@ -255,8 +342,8 @@ def run_full_document_ocr(image_path, model_path, vocab_input):
 
 if __name__ == "__main__":
     # --- CONFIGURATION ---
-    IMAGE_PATH = "test_image.png"
-    MODEL_PATH = "./checkpoints/khmerocr_epoch100.pth"
+    IMAGE_PATH = "khmer_document_4.jpg"
+    MODEL_PATH = "./checkpoints/khmerocr_vgg_lstm_epoch100.pth"
     CHAR2IDX_PATH = "char2idx.json"
     
     # Define Output Folder
