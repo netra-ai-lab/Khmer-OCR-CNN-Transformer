@@ -115,10 +115,10 @@ TABLE 2: Failure cases of CNN-Transformer vs Tesseract OCR on KHOB, Legal Docume
 | :--- | :--- | :--- | :--- | :--- |
 | **Images** | ![Case 1](./assets/f_case_1.png) | ![Case 2](./assets/f_case_2.png) | ![Case 3](./assets/f_case_3.png) | ![Case 4](./assets/f_case_4.png) |
 | **Ground-Truth** | អគ្គលេខាធិការដ្ឋានគណៈកម្មាធិការដឹកនាំ | និងកែសម្រួលសមាសភាពរាជរដ្ឋាភិបាលនៃព្រះរាជាណាចក្រកម្ពុជា | ឧបនាយករដ្ឋមន្ត្រី | 180818125 |
-| **SeqSE-CRNN-Tr** | អគ្គលេខះ$\textcolor{red}{\text{ទិកា}}$ដ្ឋាន$\textcolor{red}{\text{ឧកណះ}}$ក$\textcolor{red}{\text{ម្ពា}}$ធិការ$\textcolor{red}{\text{ដើ}}$កនាំ | និងកែសម្រួលសមាសភាពរាជរដ្ឋាភិបាល$\textcolor{red}{\text{នៃ}}$ព្រះរាជាណាចក្រកម្ពុជា | ឧបនាយក$\textcolor{red}{\text{រដ្ឋ}}$មន្ត្រី | $180818\textcolor{red}{18}125$ |
-| **VGG-Tr** | អគ្គលេខ$\textcolor{red}{\text{ះទិ}}$ការដ្ឋានគណៈក$\textcolor{red}{\text{ម្ពា}}$ធិការ$\textcolor{red}{\text{ដើ}}$កនាំ | និងកែសម្រួលសមាសភាពរាជរដ្ឋាភិបាល$\textcolor{red}{\text{នៃ}}$ព្រះរាជាណាចក្រកម្ពុជា | $\textcolor{red}{\text{ខ្ញុំ}}$បនាយករដ្ឋមន្ត្រី | 18081 8125 |
-| **ResNet-Tr** | $\textcolor{red}{\text{ភ្លេ}}$ល$\textcolor{red}{\text{ខះ}}$ធិការដ្ឋាន$\textcolor{red}{\#}$ណៈក$\textcolor{red}{\text{ម្ព}}$ដិការដឹកនាំ | និងកែសម្រួលសមាសភាពរាជរដ្ឋាភិបាល$\textcolor{red}{\text{នៃ}}$ព្រះរាជាណាចក្រកម្ពុជា | ឧបនាយករដ្ឋម$\textcolor{red}{\text{ន្តី}}$ | $18\textcolor{red}{0}818125$ |
-| **Tesseract** | .$\textcolor{red}{\text{«}}$ល$\textcolor{red}{\text{ខទ}}$ទិការដ្ឋាន$\textcolor{red}{\text{ទ}}$ណៈក$\textcolor{red}{\text{ម្ពា}}$ធិការដឹក$\textcolor{red}{\text{ឆាំ}}$ | និងកែសម្រួលសមាសភាពរាជ$\textcolor{red}{\text{ន្ឋា}}$ភិបាលនៃ$\textcolor{red}{\text{ទ្រះ}}$រាជាណាចក្រកម្ពុជា | $\textcolor{red}{\text{ទូ}}$បនាយករដ្ឋមន្ត្រី | 180818125 |
+| **SeqSE-CRNN-Tr** | អគ្គលេខះ<span style="color:red">ទិកា</span>ដ្ឋាន<span style="color:red">ឧកណះ</span>ក<span style="color:red">ម្ពា</span>ធិការ<span style="color:red">ដើ</span>កនាំ | និងកែសម្រួលសមាសភាពរាជរដ្ឋាភិបាល<span style="color:red">នៃ</span>ព្រះរាជាណាចក្រកម្ពុជា | ឧបនាយក<span style="color:red">រដ្ឋ</span>មន្ត្រី | 180818<span style="color:red">18</span>125 |
+| **VGG-Tr** | អគ្គលេខ<span style="color:red">ះទិ</span>ការដ្ឋានគណៈក<span style="color:red">ម្ពា</span>ធិការ<span style="color:red">ដើ</span>កនាំ | និងកែសម្រួលសមាសភាពរាជរដ្ឋាភិបាល<span style="color:red">នៃ</span>ព្រះរាជាណាចក្រកម្ពុជា | <span style="color:red">ខ្ញុំ</span>បនាយករដ្ឋមន្ត្រី | 18081<span style="color:red">\|</span>8125 |
+| **ResNet-Tr** | <span style="color:red">ភ្លេ</span>ល<span style="color:red">ខះ</span>ធិការដ្ឋាន<span style="color:red">#</span>ណៈក<span style="color:red">ម្ព</span>ដិការដឹកនាំ | និងកែសម្រួលសមាសភាពរាជរដ្ឋាភិបាល<span style="color:red">នៃ</span>ព្រះរាជាណាចក្រកម្ពុជា | ឧបនាយករដ្ឋម<span style="color:red">ន្តី</span> | 18<span style="color:red">0</span>818125 |
+| **Tesseract** | .<span style="color:red">«</span>ល<span style="color:red">ខទ</span>ទិការដ្ឋាន<span style="color:red">ទ</span>ណៈក<span style="color:red">ម្ពា</span>ធិការដឹក<span style="color:red">ឆាំ</span> | និងកែសម្រួលសមាសភាពរាជ<span style="color:red">ន្ឋា</span>ភិបាលនៃ<span style="color:red">ទ្រះ</span>រាជាណាចក្រកម្ពុជា | <span style="color:red">ទូ</span>បនាយករដ្ឋមន្ត្រី | 180818125 |
 
 TABLE 3: Example of CNN-Transformer vs Tesseract OCR compared with the ground truth. Errors in the predictions are highlighted in red.
 | **Category** | **Case 1** | **Case 2** | **Case 3** | **Case 4** 
@@ -128,7 +128,7 @@ TABLE 3: Example of CNN-Transformer vs Tesseract OCR compared with the ground tr
 | **SeqSE-CRNN-Tr** | រាជរដ្ឋាភិបាលកម្ពុជា | ព្រះរាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | 011048599 
 | **VGG-Tr** | រាជរដ្ឋាភិបាលកម្ពុជា | ព្រះរាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | 011048599 
 | **ResNet-Tr** | រាជរដ្ឋាភិបាលកម្ពុជា | ព្រះរាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | 011048599 
-| **Tesseract** | រាជរដ្ឋា$\textcolor{red}{\text{គិធា}}$លកម្ពុជា | ព្រះរាជាណាច$\textcolor{red}{\text{ត្រ}}$កម្ពុ<br>ជា | រាជរដ្ឋាភិបាលនៃព្រះ$\textcolor{red}{\text{៖}}$<br>រាជាណាចក្រកម្ពុជា | $0110\textcolor{red}{\text{អ}}85\textcolor{red}{6}9\textcolor{red}{:}$ |
+| **Tesseract** | រាជរដ្ឋា<span style="color:red">គិធា</span>លកម្ពុជា | ព្រះរាជាណាច<span style="color:red">ត្រ</span>កម្ពុ<br>ជា | រាជរដ្ឋាភិបាលនៃព្រះ<span style="color:red">៖</span><br>រាជាណាចក្រកម្ពុជា | 0110<span style="color:red">H</span>85<span style="color:red">6</span>9<span style="color:red">:</span> 
 
 **Key Findings:**
 *   **SeqSE-CRNN-Transformer (Ours)** achieves the highest accuracy on long, continuous text lines (KHOB), demonstrating that the **BiLSTM Context Smoother** effectively resolves the chunk boundary discontinuities that limit standard Transformer baselines.
