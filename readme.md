@@ -128,7 +128,7 @@ TABLE 3: Example of CNN-Transformer vs Tesseract OCR compared with the ground tr
 | **SeqSE-CRNN-Tr** | រាជរដ្ឋាភិបាលកម្ពុជា | ព្រះរាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | 011048599 
 | **VGG-Tr** | រាជរដ្ឋាភិបាលកម្ពុជា | ព្រះរាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | 011048599 
 | **ResNet-Tr** | រាជរដ្ឋាភិបាលកម្ពុជា | ព្រះរាជាណាចក្រកម្ពុជា | រាជរដ្ឋាភិបាលនៃព្រះ<br>រាជាណាចក្រកម្ពុជា | 011048599 
-| **Tesseract** | រាជរដ្ឋា<span style="color:red">គិធា</span>លកម្ពុជា | ព្រះរាជាណាច<span style="color:red">ត្រ</span>កម្ពុ<br>ជា | រាជរដ្ឋាភិបាលនៃព្រះ<span style="color:red">៖</span><br>រាជាណាចក្រកម្ពុជា | 0110<span style="color:red">H</span>85<span style="color:red">6</span>9<span style="color:red">:</span> 
+| **Tesseract** | $\text{រាជរដ្ឋា}\textcolor{red}{\text{គិធា}}\text{លកម្ពុជា}$ | $\text{ព្រះរាជាណាច}\textcolor{red}{\text{ត្រ}}\text{កម្ពុ}$<br>$\text{ជា}$ | $\text{រាជរដ្ឋាភិបាលនៃព្រះ}\textcolor{red}{\text{៖}}$<br>$\text{រាជាណាចក្រកម្ពុជា}$ | $0110\textcolor{red}{\text{H}}85\textcolor{red}{6}9\textcolor{red}{:}$ |
 
 **Key Findings:**
 *   **SeqSE-CRNN-Transformer (Ours)** achieves the highest accuracy on long, continuous text lines (KHOB), demonstrating that the **BiLSTM Context Smoother** effectively resolves the chunk boundary discontinuities that limit standard Transformer baselines.
