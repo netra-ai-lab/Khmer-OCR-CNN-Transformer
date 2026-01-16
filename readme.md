@@ -220,3 +220,13 @@ Below is the original document image and the result of the editable PDF with lay
 5. **EKYC Solutions.** (n.d.). *Khmer OCR benchmark dataset (KHOB)* [Data set]. GitHub. https://github.com/EKYCSolutions/khmer-ocr-benchmark-dataset
 
 6. **Em, H., Valy, D., Gosselin, B., & Kong, P.** (2024). *Khmer text recognition dataset* [Data set]. Kaggle. https://www.kaggle.com/datasets/emhengly/khmer-text-recognition-dataset
+
+7. **Squeeze-and-Excitation Networks**  
+   *Jie Hu, Li Shen, and Gang Sun.*  
+   CVPR 2018.  
+   [arXiv:1709.01507](https://arxiv.org/abs/1709.01507)
+
+8. **Bidirectional Recurrent Neural Networks**  
+   *Mike Schuster and Kuldip K. Paliwal.*  
+   IEEE Transactions on Signal Processing, 1997.  
+   [DOI: 10.1109/78.650093](https://doi.org/10.1109/78.650093)

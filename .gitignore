@@ -101,6 +101,8 @@ logs/
 aws_code/
 models/
 
+setup_hf_model/
+
 # Files
 loss_curve.png
 inference_results.txt
