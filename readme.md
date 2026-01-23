@@ -124,7 +124,7 @@ TABLE 3: Example of proposed, and baseline model compared with the ground truth.
 
 ### Installation
 ```bash
-git clone https://github.com/Khmer-English-Document-Translation/Khmer-OCR-CNN-Transformer.git
+git clone https://github.com/Netra-AI-Lab/Khmer-OCR-CNN-Transformer.git
 cd khmer-ocr-cnn-transformer
 pip install -r requirements.txt
 ```
