@@ -127,8 +127,8 @@ TABLE 1: Character Error Rate (CER in %) results on the KHOB, Legal Documents, a
 | :--- | :--- | :--- | :--- |
 | Tesseract-OCR | 9.36 | 24.30 | 8.02 |
 | VGG-Transformer | 5.07 | 10.27 | 3.61 |
-| ResNet-Transformer | 5.85 | 11.57 | $\textcolor{yellow}{2.80}$ |
-| **Proposed Model** | $\textcolor{yellow}{4.79}$ | $\textcolor{yellow}{9.13}$ | 3.44 |
+| ResNet-Transformer | 5.85 | 11.57 | 2.80 |
+| **Proposed Model** | $\textcolor{yellow}{1.91}$ | $\textcolor{yellow}{9.13}$ | $\textcolor{yellow}{2.46}$ |
 
 ---
 
