@@ -129,7 +129,7 @@ TABLE 1: Character Error Rate (CER in %) results on the KHOB, Legal Documents, a
 | Tesseract-OCR | 9.36 | 24.30 | 8.02 |
 | VGG-Transformer | 5.07 | 10.27 | 3.61 |
 | ResNet-Transformer | 5.85 | 11.57 | 2.80 |
-| **Proposed Model** | $\textcolor{yellow}{1.91}$ | $\textcolor{yellow}{9.13}$ | $\textcolor{yellow}{2.46}$ |
+| **Proposed Model** | $\textcolor{yellow}{1.87}$ | $\textcolor{yellow}{9.13}$ | $\textcolor{yellow}{2.46}$ |
 
 ---
 
@@ -144,7 +144,7 @@ TABLE 3: Example of proposed, and baseline model compared with the ground truth.
 **Key Findings:**
 *   **The Proposed Model** achieves the highest accuracy on long, continuous text lines (KHOB), demonstrating that the **BiLSTM Context Smoother** effectively resolves the chunk boundary discontinuities that limit standard Transformer baselines.
 *   On degraded and complex legal documents, **the proposed model** demonstrates superior robustness, significantly outperforming all baselines. This attributes to the **Squeeze-and-Excitation blocks**, which filter background noise while preserving character-specific features.
-*   **ResNet-Transformer** retains a slight advantage on short, isolated words where global context is less critical, though our proposed model still outperforms the VGG-Transformer baseline in this category.
+*   **The Proposed Model** still retains a slight advantage on short, isolated words even where global context is less critical, outperforming both ResNet and VGG Transformer baseline.
 
 
 ### Installation
