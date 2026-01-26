@@ -1,8 +1,35 @@
-# A Squeeze-and-Excitation Transformer Network for Khmer Optical Character Recognition
+<div align="center">
+  <img src="assets/netra.png" width="60%" alt="Netra Lab" />
+</div>
+
+<hr>
+
+<p align="center">
+  <a href="https://huggingface.co/Darayut/khmer-text-recognition"><b>Model Download</b></a> |
+    <a href="https://huggingface.co/collections/Darayut/khmer-text-synthetic"><b>Dataset Download</b></a> |
+    <a href="https://huggingface.co/spaces/Darayut/Khmer-Text-Recognition"><b>Inference Space</b></a> |
+</p>
+
+
+<h2>
+<p align="center">
+  <a href="">A Squeeze-and-Excitation Transformer Network for Khmer Optical Character Recognition</a>
+</p>
+</h2>
+
+<p align="center">
+<img src="assets/benchmark.png" style="width: 1000px" align=center>
+</p>
+
+<p align="center">
+<a href="">Character Error Rate (CER %) on KHOB, Legal Documents, and Printed Word Benchmark</a>       
+</p>
+
+## Introduction
 
 This repository contains the implementation, datasets, and evaluation results for the **Squeeze-and-Excitation Transformer Network**, a high-performance Khmer Text Recognition model that utilizes a hybrid architecture combining **Squeeze-and-Excitation** blocks for feature extraction and **BiLSTM** smoothing for context smoothing, specifically designed to handle the complexity and length of Khmer script.
 
-## Project Overview
+## Overview
 
 Khmer script presents unique challenges for OCR due to its large character set, complex sub-consonant stacking, and variable text line lengths. This project proposes an enhanced pipeline that:
 1.  **Chunks** long text lines into manageable overlapping segments.
@@ -14,10 +41,7 @@ Khmer script presents unique challenges for OCR due to its large character set, 
 
 ## Datasets
 
-The model was trained entirely on synthetic data and evaluated on real-world datasets. You can access the full training datasets on **Hugging Face**: 
-
-[![Hugging Face Datasets](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Datasets-blue)](https://huggingface.co/collections/Darayut/khmer-text-synthetic)
-
+The model was trained entirely on synthetic data and evaluated on real-world datasets.
 ### Training Data (Synthetic)
 We generated **200,000 synthetic images** to ensure robustness against font variations and background noise.
 
