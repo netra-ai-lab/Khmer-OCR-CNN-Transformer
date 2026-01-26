@@ -105,6 +105,8 @@ setup_hf_model/
 
 results/
 
+tesseract_test/
+
 # Files
 loss_curve.png
 inference_results.txt
