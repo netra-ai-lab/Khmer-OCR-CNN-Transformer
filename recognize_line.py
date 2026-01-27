@@ -11,7 +11,10 @@ from se_transformer_OCR.predictor import OCRPredictor
 
 # Import your model architecture file
 try:
-    from se_model import KhmerOCR
+    from se_model import KhmerOCR as SE_KhmerOCR
+    from vgg_model import KhmerOCR as VGG_KhmerOCR
+    from resnet_model import KhmerOCR as ResNet_KhmerOCR
+
 except ImportError:
     print("Error: 'se_model.py' must be in the same directory.")
     sys.exit(1)
@@ -20,7 +23,7 @@ except ImportError:
 # GLOBAL SETTINGS & STATE
 # ==============================================================================
 # Define defaults here so you don't have to pass them every time
-DEFAULT_MODEL_PATH = "checkpoints/khmerocr_se_transformer.pth"
+DEFAULT_MODEL_PATH = "./checkpoints/khmerocr_se_transformer.pth"
 DEFAULT_VOCAB_PATH = "char2idx.json"
 
 # Global variable to hold the model in memory (Singleton)
@@ -36,6 +39,13 @@ def _get_predictor(model_path=None, vocab_path=None):
     model_path = model_path or DEFAULT_MODEL_PATH
     vocab_path = vocab_path or DEFAULT_VOCAB_PATH
 
+    if "vgg" in model_path.lower():
+        model = VGG_KhmerOCR
+    elif "resnet" in model_path.lower():
+        model = ResNet_KhmerOCR
+    else:
+        model = SE_KhmerOCR
+        
     if _PREDICTOR_INSTANCE is not None:
         return _PREDICTOR_INSTANCE
     try:
@@ -47,12 +57,12 @@ def _get_predictor(model_path=None, vocab_path=None):
             model_path=model_path,
             tokenizer=tokenizer,
             config=config,
-            model_class=KhmerOCR
+            model_class=model
         )
         return _PREDICTOR_INSTANCE
 
     except Exception as e:
-        print(f"❌ Failed to load model: {e}")
+        print(f"Failed to load model: {e}")
         sys.exit(1)
 
 # ==============================================================================
