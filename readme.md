@@ -252,6 +252,36 @@ Below is the original document image and the result of the editable PDF with lay
   <img src="./assets/pdf_convert.png" width="45%" /> 
 </p>
 
+## Huggingface-Inference
+1. Setup
+```bash
+pip install torch torchvision transformers pillow huggingface_hub
+
+# Setup the inference script
+wget https://huggingface.co/Darayut/khmer-text-recognition/resolve/main/configuration_khmerocr.py
+
+wget https://huggingface.co/Darayut/khmer-text-recognition/resolve/main/inference.py
+
+```
+2. Run via CLI
+```bash
+python inference.py --image "path/to/image.png" --method beam --beam_width 3
+
+```
+
+3. Run via Python
+```python
+from inference import KhmerOCR
+
+# Load Model (Downloads automatically)
+ocr = KhmerOCR()
+
+# Predict
+text = ocr.predict("test_image.jpg", method="beam", beam_width=3)
+print(text)
+
+```
+
 ---
 ## References
 
