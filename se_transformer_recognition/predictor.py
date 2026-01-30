@@ -2,9 +2,9 @@ import torch
 import torch.nn.functional as F
 import logging
 from pathlib import Path
-from .config import OCRConfig
-from .tokenizer import Tokenizer
-from .preprocessor import ImagePreprocessor
+from config import OCRConfig
+from tokenizer import Tokenizer
+from preprocessor import ImagePreprocessor
 
 logger = logging.getLogger(__name__)
 
