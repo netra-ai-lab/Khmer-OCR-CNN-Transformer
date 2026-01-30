@@ -4,16 +4,16 @@ import logging
 from pathlib import Path
 
 # Import from the source package
-from se_transformer_OCR.config import OCRConfig
-from se_transformer_OCR.utils import setup_logging, autodetect_config
-from se_transformer_OCR.tokenizer import Tokenizer
-from se_transformer_OCR.predictor import OCRPredictor
+from config import OCRConfig
+from utils import setup_logging, autodetect_config
+from tokenizer import Tokenizer
+from predictor import OCRPredictor
 
 # Import your model architecture file
 try:
-    from se_model import KhmerOCR as SE_KhmerOCR
-    from vgg_model import KhmerOCR as VGG_KhmerOCR
-    from resnet_model import KhmerOCR as ResNet_KhmerOCR
+    from model.se_model import KhmerOCR as SE_KhmerOCR
+    from model.vgg_model import KhmerOCR as VGG_KhmerOCR
+    from model.resnet_model import KhmerOCR as ResNet_KhmerOCR
 
 except ImportError:
     print("Error: 'se_model.py' must be in the same directory.")
@@ -23,7 +23,7 @@ except ImportError:
 # GLOBAL SETTINGS & STATE
 # ==============================================================================
 # Define defaults here so you don't have to pass them every time
-DEFAULT_MODEL_PATH = "./checkpoints/khmerocr_se_transformer.pth"
+DEFAULT_MODEL_PATH = "./weight/khmerocr_se_transformer.pth"
 DEFAULT_VOCAB_PATH = "char2idx.json"
 
 # Global variable to hold the model in memory (Singleton)
@@ -123,18 +123,18 @@ if __name__ == "__main__":
     """
     USAGE EXAMPLE:
 
-        python recognize_line.py --image "test_images/sample.png"
+        python recognition.py --image "test_images/sample.png"
 
-        python recognize_line.py \
+        python recognition.py \
         --image "sample.png" \
-        --model "checkpoints/model.pth" \
+        --model "weight/model.pth" \
         --vocab "char2idx.json" \
         --beam 5 \
         --output "results/sample_output.txt"
         
     ARGUMENTS:
         --image: Path to the input image (Required).
-        --model: Path to .pth file (Default: ./checkpoints/...).
+        --model: Path to .pth file (Default: ./weight/...).
         --vocab: Path to .json vocab (Default: char2idx.json).
         --beam: Beam width. Set to 1 for Greedy Search (Default: 3).
         --output: (Optional) Text file to save the result.

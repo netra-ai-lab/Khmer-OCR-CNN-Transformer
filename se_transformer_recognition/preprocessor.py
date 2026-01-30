@@ -3,7 +3,7 @@ import torch.nn.functional as F
 from PIL import Image
 from pathlib import Path
 from torchvision import transforms
-from .config import OCRConfig
+from config import OCRConfig
 
 class ImagePreprocessor:
     def __init__(self, config: OCRConfig):
