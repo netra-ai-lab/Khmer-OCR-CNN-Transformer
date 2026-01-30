@@ -1,0 +1,269 @@
+{
+    "filename": "mef_2.tiff",
+    "dimensions": {
+        "width": 595,
+        "height": 841
+    },
+    "elements": [
+        {
+            "category": "Picture",
+            "category_id": 7,
+            "bbox": [
+                238,
+                67,
+                343,
+                173
+            ]
+        },
+        {
+            "category": "Title",
+            "category_id": 11,
+            "bbox": [
+                86,
+                182,
+                487,
+                201
+            ]
+        },
+        {
+            "category": "Title",
+            "category_id": 11,
+            "bbox": [
+                94,
+                207,
+                490,
+                226
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                250,
+                227,
+                327,
+                241
+            ]
+        },
+        {
+            "category": "Section-header",
+            "category_id": 8,
+            "bbox": [
+                79,
+                280,
+                144,
+                298
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                107,
+                307,
+                504,
+                325
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                75,
+                329,
+                504,
+                346
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                73,
+                349,
+                504,
+                370
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                74,
+                371,
+                504,
+                390
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                75,
+                392,
+                504,
+                411
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                72,
+                412,
+                504,
+                432
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                74,
+                435,
+                504,
+                452
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                74,
+                457,
+                504,
+                475
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                74,
+                477,
+                504,
+                496
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                74,
+                497,
+                159,
+                517
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                107,
+                521,
+                505,
+                541
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                73,
+                542,
+                504,
+                562
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                73,
+                563,
+                504,
+                582
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                72,
+                586,
+                504,
+                604
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                73,
+                606,
+                504,
+                626
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                72,
+                627,
+                504,
+                647
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                72,
+                648,
+                503,
+                668
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                73,
+                671,
+                503,
+                689
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                73,
+                692,
+                504,
+                712
+            ]
+        },
+        {
+            "category": "Page-footer",
+            "category_id": 5,
+            "bbox": [
+                72,
+                752,
+                381,
+                766
+            ]
+        },
+        {
+            "category": "Page-footer",
+            "category_id": 5,
+            "bbox": [
+                442,
+                753,
+                504,
+                765
+            ]
+        }
+    ]
+}
