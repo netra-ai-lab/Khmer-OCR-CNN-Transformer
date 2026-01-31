@@ -1,97 +1,117 @@
 {
-    "filename": "mef_2.tiff",
+    "filename": "goc_4.tiff",
     "dimensions": {
         "width": 595,
-        "height": 841
+        "height": 842
     },
     "elements": [
         {
             "category": "Picture",
             "category_id": 7,
             "bbox": [
-                238,
-                68,
-                343,
-                174
+                213,
+                10,
+                406,
+                188
             ]
         },
         {
             "category": "Title",
             "category_id": 11,
             "bbox": [
-                87,
-                183,
-                493,
-                202
+                41,
+                150,
+                153,
+                168
             ]
         },
         {
             "category": "Title",
             "category_id": 11,
             "bbox": [
-                90,
-                208,
-                491,
-                227
+                41,
+                177,
+                154,
+                195
             ]
         },
         {
-            "category": "Text",
-            "category_id": 10,
+            "category": "Picture",
+            "category_id": 7,
             "bbox": [
-                252,
-                228,
-                328,
-                242
+                260,
+                211,
+                349,
+                235
+            ]
+        },
+        {
+            "category": "Picture",
+            "category_id": 7,
+            "bbox": [
+                289,
+                236,
+                320,
+                254
             ]
         },
         {
             "category": "Section-header",
             "category_id": 8,
             "bbox": [
-                75,
-                281,
-                145,
-                299
+                122,
+                255,
+                489,
+                273
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                108,
-                308,
-                505,
-                326
+                106,
+                286,
+                538,
+                307
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                76,
-                330,
-                505,
-                347
+                71,
+                306,
+                537,
+                328
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                75,
-                350,
-                498,
-                371
+                71,
+                327,
+                538,
+                348
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                75,
-                372,
-                505,
+                71,
+                348,
+                537,
+                368
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                71,
+                369,
+                537,
                 391
             ]
         },
@@ -99,19 +119,19 @@
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                76,
-                393,
-                505,
-                412
+                71,
+                390,
+                537,
+                411
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                74,
-                413,
-                505,
+                71,
+                411,
+                537,
                 433
             ]
         },
@@ -119,59 +139,59 @@
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                75,
-                436,
-                505,
-                453
+                71,
+                433,
+                537,
+                454
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                75,
-                458,
-                505,
-                476
+                70,
+                453,
+                537,
+                474
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                77,
-                478,
-                505,
-                497
+                69,
+                472,
+                537,
+                496
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                75,
-                498,
-                150,
-                518
+                71,
+                496,
+                537,
+                516
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                108,
-                522,
-                505,
-                542
+                70,
+                515,
+                306,
+                536
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                74,
-                543,
-                505,
+                104,
+                542,
+                537,
                 563
             ]
         },
@@ -179,19 +199,19 @@
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                74,
-                564,
-                505,
-                583
+                71,
+                563,
+                536,
+                584
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                73,
-                587,
-                502,
+                70,
+                584,
+                532,
                 605
             ]
         },
@@ -199,70 +219,80 @@
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                74,
-                607,
-                503,
-                627
+                70,
+                604,
+                536,
+                625
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                73,
-                628,
-                500,
-                648
+                70,
+                625,
+                370,
+                647
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                73,
-                649,
-                501,
-                669
+                104,
+                650,
+                536,
+                674
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                74,
+                70,
                 672,
-                504,
-                690
+                535,
+                694
             ]
         },
         {
             "category": "Text",
             "category_id": 10,
             "bbox": [
-                74,
+                69,
                 693,
-                505,
-                713
+                535,
+                714
             ]
         },
         {
-            "category": "Page-footer",
-            "category_id": 5,
+            "category": "Text",
+            "category_id": 10,
             "bbox": [
-                76,
-                753,
-                380,
-                767
+                69,
+                714,
+                535,
+                735
             ]
         },
         {
-            "category": "Page-footer",
-            "category_id": 5,
+            "category": "Text",
+            "category_id": 10,
             "bbox": [
-                441,
-                754,
-                497,
-                766
+                69,
+                732,
+                536,
+                756
+            ]
+        },
+        {
+            "category": "Text",
+            "category_id": 10,
+            "bbox": [
+                69,
+                755,
+                535,
+                777
             ]
         }
     ]

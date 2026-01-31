@@ -22,11 +22,11 @@ class Config:
     }
 
     # Thresholds
-    ENTRY_THRESHOLD = 0.15
-    SCORE_THRESHOLD = 0.3
+    ENTRY_THRESHOLD = 0.10
+    SCORE_THRESHOLD = 0.2
     
     # Morphology & Merging
-    MORPH_KERNEL_SIZE = (25, 3)
+    MORPH_KERNEL_SIZE = (40, 6)
     MERGE_X_DIST = 60
     LINE_OVERLAP_THRESHOLD = 0.4
     
@@ -46,7 +46,7 @@ class Config:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
     # Bounding Box Settings
-    DRAW_THICKNESS = 2
+    DRAW_THICKNESS = 1
     
     # Heatmap Colormap
     HEATMAP_STYLE = cv2.COLORMAP_JET
