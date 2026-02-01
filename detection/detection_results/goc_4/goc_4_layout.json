@@ -12,22 +12,22 @@
                 220,
                 25,
                 402,
-                182
+                171
             ]
         },
         {
-            "category": "Title",
-            "category_id": 11,
+            "category": "Text",
+            "category_id": 10,
             "bbox": [
                 41,
-                148,
+                147,
                 153,
                 170
             ]
         },
         {
-            "category": "Title",
-            "category_id": 11,
+            "category": "Section-header",
+            "category_id": 8,
             "bbox": [
                 40,
                 180,
@@ -36,21 +36,21 @@
             ]
         },
         {
-            "category": "Text",
-            "category_id": 10,
+            "category": "Section-header",
+            "category_id": 8,
             "bbox": [
                 260,
                 212,
                 350,
-                234
+                232
             ]
         },
         {
-            "category": "Text",
-            "category_id": 10,
+            "category": "Section-header",
+            "category_id": 8,
             "bbox": [
                 289,
-                234,
+                233,
                 321,
                 255
             ]
@@ -80,9 +80,9 @@
             "category_id": 10,
             "bbox": [
                 71,
-                306,
+                305,
                 537,
-                330
+                329
             ]
         },
         {
@@ -102,7 +102,7 @@
                 71,
                 348,
                 537,
-                370
+                371
             ]
         },
         {
@@ -112,7 +112,7 @@
                 71,
                 369,
                 537,
-                393
+                392
             ]
         },
         {
@@ -180,7 +180,7 @@
             "category_id": 10,
             "bbox": [
                 70,
-                515,
+                514,
                 306,
                 537
             ]
@@ -190,7 +190,7 @@
             "category_id": 10,
             "bbox": [
                 104,
-                540,
+                541,
                 537,
                 565
             ]
@@ -230,7 +230,7 @@
             "category_id": 10,
             "bbox": [
                 70,
-                623,
+                624,
                 370,
                 647
             ]
@@ -252,7 +252,7 @@
                 70,
                 672,
                 535,
-                696
+                695
             ]
         },
         {
@@ -272,7 +272,7 @@
                 69,
                 712,
                 535,
-                737
+                736
             ]
         },
         {
@@ -290,9 +290,19 @@
             "category_id": 10,
             "bbox": [
                 69,
-                755,
+                754,
                 535,
                 779
+            ]
+        },
+        {
+            "category": "Page-footer",
+            "category_id": 5,
+            "bbox": [
+                295,
+                793,
+                311,
+                804
             ]
         }
     ]

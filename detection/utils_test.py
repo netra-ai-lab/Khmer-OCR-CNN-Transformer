@@ -23,47 +23,89 @@ def is_graphical_line(binary_crop):
 
     return is_extremely_thin and is_very_dense
 
-def snap_to_ink(img_np, box, padding=2, min_ink_pixels=3):
+def validate_non_text_content(img_np, box):
+    """
+    Checks non-text boxes (Pictures, Tables) to see if they are actually empty.
+    Returns: The box if valid, None if empty.
+    """
+    x1, y1, x2, y2 = map(int, box)
+    x1, y1 = max(0, x1), max(0, y1)
+    x2, y2 = min(img_np.shape[1], x2), min(img_np.shape[0], y2)
+
+    if (x2 - x1) < 5 or (y2 - y1) < 5: return None
+
+    crop = img_np[y1:y2, x1:x2]
+    gray = cv2.cvtColor(crop, cv2.COLOR_RGB2GRAY) if len(crop.shape) == 3 else crop
+
+    # 1. BRIGHTNESS CHECK
+    # If it's purely white/background (mean > 250), it's empty.
+    if np.mean(gray) > 252:
+        return None
+
+    # 2. VARIANCE CHECK
+    if np.std(gray) < 5:
+        return None
+
+    # 3. EDGE CHECK (Canny)
+    # A picture or table must have edges.
+    edges = cv2.Canny(gray, 50, 150)
+    edge_pixels = cv2.countNonZero(edges)
+    
+    # If less than 1% of the area is edges, it's likely noise or a blank box
+    if edge_pixels < ((x2-x1)*(y2-y1) * 0.005):
+        return None
+
+    return [x1, y1, x2, y2]
+
+def snap_to_ink(img_np, box, padding=5, min_ink_pixels=10, expand_x=25):
     """
     Refined ink snapping:
     - Lowered min_ink_pixels to 3 to catch small characters.
     - Added a 'safety' check for pixel intensity.
     """
     x1, y1, x2, y2 = map(int, box)
-    x1, y1 = max(0, x1), max(0, y1)
-    x2, y2 = min(img_np.shape[1], x2), min(img_np.shape[0], y2)
+    img_h, img_w = img_np.shape[:2]
 
-    crop = img_np[y1:y2, x1:x2]
-    if crop.size == 0: return None, False
+    # Define a WIDER search window to find cut-off text
+    search_x1 = max(0, x1 - expand_x)
+    search_x2 = min(img_w, x2 + expand_x)
+    
+    # We usually trust the vertical prediction, but ensure bounds
+    search_y1 = max(0, y1)
+    search_y2 = min(img_h, y2)
 
+    if (search_x2 - search_x1) < 2 or (search_y2 - search_y1) < 2: 
+        return None, False
+
+    # Crop the SEARCH WINDOW
+    crop = img_np[search_y1:search_y2, search_x1:search_x2]
     gray = cv2.cvtColor(crop, cv2.COLOR_RGB2GRAY) if len(crop.shape) == 3 else crop
 
-    # Check empty bbox: if the whole crop is very bright, it's definitely empty
-    if np.mean(gray) > 250:
-        return None, False
+    # Fast Rejections
+    if np.std(gray) < 5: return None, False
+    if np.mean(gray) > 250: return None, False
 
+    # Thresholding & Cleaning
     _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+    cleaned_binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
 
-    if is_graphical_line(binary):
-        return None, True
+    if is_graphical_line(cleaned_binary): return None, True
+    if cv2.countNonZero(cleaned_binary) < min_ink_pixels: return None, False
 
-    coords = cv2.findNonZero(binary)
-
-    if coords is None or len(coords) < min_ink_pixels:
-        return None, False
-
+    # Find the ink bounds inside the search window
+    coords = cv2.findNonZero(cleaned_binary)
+    if coords is None: return None, False
+    
     bx, by, bw, bh = cv2.boundingRect(coords)
 
-    # Filter only if extremely microscopic (less than 2px)
-    if bw < 2 or bh < 2:
-        return None, False
+    # Convert back to Global Coordinates
+    final_x1 = max(0, search_x1 + bx - padding)
+    final_y1 = max(0, search_y1 + by - padding)
+    final_x2 = min(img_w, search_x1 + bx + bw + padding)
+    final_y2 = min(img_h, search_y1 + by + bh + padding)
 
-    new_x1 = max(0, x1 + bx - padding)
-    new_y1 = max(0, y1 + by - padding)
-    new_x2 = min(img_np.shape[1], x1 + bx + bw + padding)
-    new_y2 = min(img_np.shape[0], y1 + by + bh + padding)
-
-    return [new_x1, new_y1, new_x2, new_y2], False
+    return [final_x1, final_y1, final_x2, final_y2], False
 
 def extract_layout_elements(img, segmentation_map, pred_heatmap):
     """
@@ -166,18 +208,25 @@ def extract_layout_elements(img, segmentation_map, pred_heatmap):
 
     for (box, cls_id) in intermediate_results:
 
+        refined_box = None
+
+        padding = Config.PADDING
+
         if cls_id in Config.TEXT_CLASSES:
 
-            refined_box, is_line = snap_to_ink(img_np, box, padding=Config.PADDING)
-            if refined_box is None: continue
+            refined_box, is_ignored = snap_to_ink(img_np, box, padding=padding)
         else:
-            p = Config.PADDING
-            refined_box = [
-                max(0, box[0]-p), max(0, box[1]-p),
-                min(img_np.shape[1], box[2]+p), min(img_np.shape[0], box[3]+p)
-            ]
+            
+            refined_box = validate_non_text_content(img_np, box)
 
-        output_boxes.append((refined_box, cls_id))
-        output_crops.append(img.crop(refined_box))
+            if refined_box is not None:
+                 refined_box = [
+                    max(0, refined_box[0]-padding), max(0, refined_box[1]-padding),
+                    min(img_np.shape[1], refined_box[2]+padding), min(img_np.shape[0], refined_box[3]+padding)
+                ]
 
+        if refined_box is not None:
+            output_boxes.append((refined_box, cls_id))
+            output_crops.append(img.crop(refined_box))
+        
     return output_crops, output_boxes

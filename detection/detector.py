@@ -6,10 +6,10 @@ import json
 import argparse
 from PIL import Image
 
-from config import Config
-from preprocessor import Preprocessor
-from model import LayoutModel
-from utils import extract_layout_elements
+from detection.config import Config
+from detection.preprocessor import Preprocessor
+from detection.model import LayoutModel
+from detection.utils import extract_layout_elements
 
 class LayoutInference:
     def __init__(self):
@@ -25,13 +25,11 @@ class LayoutInference:
             print(f"Error: Image not found at {image_path}")
             return
 
-        # 1. Preprocess & Predict
         print(f"Processing: {image_path}")
         image, pixel_values, orig_size = self.prep.prepare_image(image_path)
         pred_seg, pred_heatmap = self.model.predict(pixel_values, orig_size)
 
-        # 2. Professional Post-Processing
-        print("Running layout extraction logic...")
+        print("Running layout extraction...")
         # Note: extract_layout_elements returns (crops, boxes)
         _, refined_results = extract_layout_elements(image, pred_seg, pred_heatmap)
 

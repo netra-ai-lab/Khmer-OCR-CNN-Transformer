@@ -2,7 +2,7 @@ import os
 import cv2
 class Config:
     # Model Setup
-    MODEL_PATH = "./det-b0" 
+    MODEL_PATH = "detection/det-b0" 
     PROCESSOR_ID = "nvidia/mit-b0" 
     NUM_LABELS = 12
     IMAGE_SIZE = 512
