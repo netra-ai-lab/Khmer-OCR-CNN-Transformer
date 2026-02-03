@@ -175,12 +175,12 @@ cd Khmer-OCR-CNN-Transformer
 
 ### 1. Textline inference via CLI:
 ```bash
-python recognize_line.py --image "test_images/sample.png"
+python -m recognition.recognize_text --image "sample.png"
 ```
 Advanced Usage:
 Specify a custom model path, vocabulary, beam width, and save the output to a text file.
 ```bash
-python recognize_line.py \
+python -m recognition.recognize_text \
   --image "sample.png" \
   --model "checkpoints/model.pth" \
   --vocab "char2idx.json" \
@@ -190,7 +190,7 @@ python recognize_line.py \
 
 ### 2. Textline inference via Python:
 ```python
-from recognize_line import recognize
+from recognition.recognize_text import recognize
 
 # 1. Basic Usage
 text = recognize("test_images/sample.png")
