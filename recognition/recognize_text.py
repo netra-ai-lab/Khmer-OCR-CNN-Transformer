@@ -1,19 +1,13 @@
 import argparse
 import sys
-import logging
-from pathlib import Path
-
-# Import from the source package
-from recognition.config import OCRConfig
-from recognition.utils import setup_logging, autodetect_config
-from recognition.tokenizer import Tokenizer
-from recognition.predictor import OCRPredictor
-
-# Import your model architecture file
+from .config import OCRConfig
+from .utils import setup_logging, autodetect_config
+from .tokenizer import Tokenizer
+from .predictor import OCRPredictor
 try:
-    from recognition.model.se_model import KhmerOCR as SE_KhmerOCR
-    from recognition.model.vgg_model import KhmerOCR as VGG_KhmerOCR
-    from recognition.model.resnet_model import KhmerOCR as ResNet_KhmerOCR
+    from .model.se_model import KhmerOCR as SE_KhmerOCR
+    from .model.vgg_model import KhmerOCR as VGG_KhmerOCR
+    from .model.resnet_model import KhmerOCR as ResNet_KhmerOCR
 
 except ImportError:
     print("Error: 'se_model.py' must be in the same directory.")

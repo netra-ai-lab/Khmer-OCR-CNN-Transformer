@@ -1,7 +1,7 @@
 import torch
 from PIL import Image
 from transformers import SegformerImageProcessor
-from detection.config import Config
+from .config import Config
 
 class Preprocessor:
     def __init__(self):

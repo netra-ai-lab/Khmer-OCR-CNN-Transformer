@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from PIL import Image
-from detection.config import Config
+from .config import Config
 
 def get_iou(box1, box2):
     """Calculates Intersection over Union (IoU) to find overlaps."""

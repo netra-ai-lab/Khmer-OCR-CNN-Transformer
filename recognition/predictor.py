@@ -2,9 +2,9 @@ import torch
 import torch.nn.functional as F
 import logging
 from pathlib import Path
-from recognition.config import OCRConfig
-from recognition.tokenizer import Tokenizer
-from recognition.preprocessor import ImagePreprocessor
+from .config import OCRConfig
+from .tokenizer import Tokenizer
+from .preprocessor import ImagePreprocessor
 from tqdm import tqdm
 
 logger = logging.getLogger(__name__)

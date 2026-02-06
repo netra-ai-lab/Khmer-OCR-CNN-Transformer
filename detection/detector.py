@@ -6,10 +6,10 @@ import json
 import argparse
 from PIL import Image
 
-from detection.config import Config
-from detection.preprocessor import Preprocessor
-from detection.model import LayoutModel
-from detection.utils import extract_layout_elements
+from .config import Config
+from .preprocessor import Preprocessor
+from .model import LayoutModel
+from .utils import extract_layout_elements
 
 class LayoutInference:
     def __init__(self):
