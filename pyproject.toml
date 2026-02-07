@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "khmer-ocr"
+version = "0.1.0"
+description = "Khmer OCR Engine using Squeeze-and-Excitation Transformer Networks for textline recognition, and Surya for textline detection."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Nhem Darayut", email = "darayutnhem009@gmail.com"},
+]
+
+dependencies = [
+    "pillow==9.5.0",
+    "numpy",
+    "opencv-python",
+    "tqdm",
+    "datasets",
+    "transformers",
+    "torch",
+    "torchvision",
+    "reportlab",
+    "python-docx",
+]
+
+[project.scripts]
+ocr = "ocr_engine:main"
+
+[tool.setuptools]
+packages = ["detection", "recognition"]
+py-modules = ["ocr_engine", "textline_detection"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.pth", "*.yaml"]
