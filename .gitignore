@@ -124,7 +124,7 @@ printed_eval_dataset.py
 plot.ipynb 
 padding.py 
 normalizer.py 
-model.py 
+
 khob_eval.py 
 khmerocr_epoch50.pth 
 khmer_template.py 
