@@ -13,8 +13,8 @@ authors = [
     {name = "Nhem Darayut", email = "darayutnhem009@gmail.com"},
 ]
 
+
 dependencies = [
-    dependencies = [
     "pillow>=10.2.0,<11.0.0",
     "numpy",
     "opencv-python",
@@ -26,9 +26,9 @@ dependencies = [
     "reportlab>=4.0.4",
     "python-docx",
     "surya-ocr==0.17.0",           
-    "safetensors"
+    "safetensors",
 ]
-]
+
 
 [project.scripts]
 netra_ocr = "netra_ocr.ocr_engine:main"
