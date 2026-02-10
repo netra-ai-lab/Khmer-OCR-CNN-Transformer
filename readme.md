@@ -1,7 +1,6 @@
 <div align="center">
   <img src="assets/netra.png" width="60%" alt="Netra Lab" />
 </div>
-
 <hr>
 
 <p align="center">
