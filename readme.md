@@ -195,9 +195,6 @@ netra_ocr --image document.png --engine surya --padding 10 --beam 1 --batch_size
 | `--batch_size` | `int` | `8` | Number of text lines to process in parallel on the GPU/CPU. |
 | `--debug` | `flag` | `False` | If set, saves every cropped line image and its corresponding text into a `debug_<filename>_<engine>` folder for verification. |
 
-
-
-
 ## Huggingface-Inference
 1. Setup
 ```bash
