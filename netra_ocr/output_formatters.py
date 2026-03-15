@@ -351,7 +351,7 @@ def save_pdf(
     page_w, page_h = float(img_w), float(img_h)
 
     # ── font setup ─────────────────────────────────────────────────────────
-    font_path = _find_khmer_ttf()
+    font_path = "./fonts/KantumruyPro-Regular.ttf"
     if font_path:
         try:
             pdfmetrics.registerFont(TTFont("KhmerInvis", font_path))
@@ -614,7 +614,7 @@ def save_docx(
             #   maps to 3% of the A4 page height regardless of image resolution.
             _A4_PT = 841.89
             line_h_frac = (y2 - y1) / img_h
-            font_sz_pt  = max(7.0, min(20.0,
+            font_sz_pt  = max(10.0, min(15.0,
                 line_h_frac * _A4_PT * 0.60
                 * LABEL_FONT_SCALE.get(label, 1.0)))
             half_pt = int(font_sz_pt * 2)
