@@ -218,274 +218,260 @@ def save_html(
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  PDF
+#  PDF  —  Hybrid: background image + PIL text stamps + invisible text
 #
-#  Root cause of broken Khmer rendering in the old ReportLab implementation:
-#  ReportLab copies Unicode codepoints directly into the PDF glyph stream
-#  without applying any OpenType shaping.  Khmer requires two shaping steps:
-#    1. GSUB: coeng (U+17D2) + consonant → subscript glyph lookup
-#    2. GPOS: mark-to-base / mark-to-mark for vowel and diacritic positioning
-#  Without these, coeng appears as a raw box and the following consonant sits
-#  inline instead of stacking below the base — exactly the reported bug.
+#  Why this approach produces correct Khmer shaping
+#  -------------------------------------------------
+#  ReportLab writes Unicode codepoints directly into the PDF glyph stream
+#  with no OpenType shaping engine, so coeng (U+17D2) stacking never happens.
 #
-#  Fix: build an HTML page (identical layout to save_html) and render it
-#  through a browser engine that uses HarfBuzz for shaping:
+#  Pillow's ImageDraw.text() calls FreeType directly.  On any system where
+#  libraqm is available (Linux with raqm, Windows with a Khmer-capable font),
+#  FreeType applies the GSUB + GPOS rules and produces correctly stacked
+#  subscripts.  The resulting *rendered pixels* are then embedded as an image
+#  in the PDF — shaping is baked into the pixels before ReportLab ever sees
+#  the text, so ReportLab's lack of an OT shaping engine doesn't matter.
 #
-#    WeasyPrint  (pip install weasyprint)   — Pango/HarfBuzz, best CSS support
-#    Playwright  (pip install playwright)   — Chromium/Blink, best on Windows
-#    wkhtmltopdf (system binary)            — WebKit, widely installed
-#    ReportLab                              — last resort, crop-image fallback
+#  Pipeline (per text segment)
+#  ---------------------------
+#  1. Background layer   — draw the original scan so logos, seals, signatures
+#                          and visual regions (tables, pictures) are preserved.
+#  2. Erase layer        — white rectangle over each text bbox removes the
+#                          original blurry/scanned text.
+#  3. Text stamp layer   — 3× supersampled PIL image rendered with the Khmer
+#                          TTF font; this image is drawn at the bbox position.
+#  4. Invisible text     — zero-alpha ReportLab drawString makes the PDF
+#                          searchable and copy-paste works correctly.
 #
-#  All three browser-engine paths produce correctly shaped Khmer glyphs with
-#  proper CIDToGIDMap and ToUnicode embedding.
+#  Visual segments (Table / Picture / Formula) are left untouched because
+#  the background image already contains them at full quality.
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _build_pdf_html(
-    segments: List[dict],
-    image_size: Tuple[int, int],
-) -> str:
+# Supersampling factor for PIL text stamps — higher = sharper but larger PDF
+_STAMP_SCALE = 3
+
+
+def _make_text_stamp(
+    text: str,
+    box_w: int,
+    box_h: int,
+    font_path: str,
+    bold: bool = False,
+    italic: bool = False,
+) -> "PIL.Image.Image":
     """
-    Build a self-contained HTML page that mirrors the document layout exactly,
-    sized for A4 print output.  Identical structure to save_html() but:
-      - page is fixed at A4 dimensions (no viewport scaling)
-      - @font-face embeds every discovered Khmer font as base64 so the
-        renderer uses it even when system fonts are unavailable
-      - visual images are base64-embedded
+    Render *text* into a transparent RGBA image of size (box_w × box_h).
+
+    The image is rendered at _STAMP_SCALE × resolution for sharpness, then
+    downsampled.  Font size is chosen so the text fits within the box.
+
+    Pillow calls FreeType which (with libraqm) applies full OpenType shaping —
+    Khmer coeng stacking, vowel marks, and diacritic positioning are all
+    handled correctly at this stage.
     """
-    img_w, img_h = image_size
+    from PIL import Image as PILImage, ImageDraw, ImageFont
 
-    # A4 in px at 96 dpi
-    A4_W_PX = 793.7   # 210mm
-    A4_H_PX = 1122.5  # 297mm
+    ss = _STAMP_SCALE
+    canvas_w = max(1, box_w * ss)
+    canvas_h = max(1, box_h * ss)
 
-    scale_x = A4_W_PX / img_w
-    scale_y = A4_H_PX / img_h
-    scale   = min(scale_x, scale_y)
+    # Start at 80% of box height and shrink until text fits
+    font_size = max(8, int(canvas_h * 0.80))
+    min_size  = 8
+    font_obj  = None
 
-    page_w = img_w * scale
-    page_h = img_h * scale
-
-    # ── embed Khmer font as base64 so renderer always uses it ────────────────
-    font_face = ""
-    ttf_path  = _find_khmer_ttf()
-    if ttf_path:
-        with open(ttf_path, "rb") as fh:
-            font_b64 = base64.b64encode(fh.read()).decode()
-        font_face = (
-            "@font-face {"
-            "  font-family: 'KhmerPDF';"
-            f" src: url('data:font/truetype;base64,{font_b64}') format('truetype');"
-            "}"
-        )
-        khmer_family = "'KhmerPDF','Khmer OS','Khmer UI','Noto Sans Khmer',sans-serif"
-    else:
-        khmer_family = "'Khmer OS','Khmer UI','Noto Sans Khmer','Leelawadee UI',sans-serif"
-
-    # ── build element list ────────────────────────────────────────────────────
-    els: List[str] = []
-    for seg in segments:
-        bbox  = seg.get("bbox")
-        label = seg.get("label", "Text")
-        if not bbox:
-            continue
-
-        x1, y1, x2, y2 = bbox
-        left   = x1 * scale
-        top    = y1 * scale
-        width  = max(1.0, (x2 - x1) * scale)
-        height = max(1.0, (y2 - y1) * scale)
-        # Font size: proportional to bbox height, scale-independent
-        line_h_frac = (y2 - y1) / img_h
-        font_sz_pt  = max(6.0, min(22.0,
-            line_h_frac * 841.89 * 0.58
-            * LABEL_FONT_SCALE.get(label, 1.0)))
-
-        pos = (f"position:absolute;left:{left:.2f}px;top:{top:.2f}px;"
-               f"width:{width:.2f}px;height:{height:.2f}px;")
-
-        if seg["type"] == "image":
-            crop = seg.get("crop")
-            if crop is None:
-                continue
-            els.append(
-                f'<img src="{_to_b64_uri(crop)}" alt="{html_escape(label)}"'
-                f' style="{pos}object-fit:fill;display:block;">'
-            )
-        else:
-            text = seg["text"].strip()
-            if not text:
-                continue
-            bold   = "font-weight:700;" if label in BOLD_LABELS   else ""
-            italic = "font-style:italic;" if label in ITALIC_LABELS else ""
-            # Extend text div to the right edge so text never wraps
-            right_w = page_w - left
-            els.append(
-                f'<div style="{pos}width:{right_w:.2f}px;'
-                f'font-size:{font_sz_pt:.2f}pt;{bold}{italic}'
-                f'line-height:1.15;white-space:nowrap;overflow:visible;">'
-                f'{html_escape(text)}</div>'
-            )
-
-    return f"""<!DOCTYPE html>
-<html lang="km">
-<head>
-  <meta charset="UTF-8">
-  <style>
-    {font_face}
-    * {{ box-sizing:border-box; margin:0; padding:0; }}
-    html, body {{ width:{page_w:.2f}px; height:{page_h:.2f}px; background:#fff; }}
-    body {{ font-family:{khmer_family}; }}
-    .page {{
-      position:relative;
-      width:{page_w:.2f}px; height:{page_h:.2f}px;
-      overflow:hidden;
-    }}
-  </style>
-</head>
-<body><div class="page">
-{"".join(els)}
-</div></body>
-</html>"""
-
-
-def _render_pdf_weasyprint(html: str, output_path: str) -> bool:
-    """Render via WeasyPrint (Pango/HarfBuzz). Returns True on success."""
     try:
-        import weasyprint
-        wp_doc = weasyprint.HTML(string=html).write_pdf()
-        with open(output_path, "wb") as fh:
-            fh.write(wp_doc)
-        print("  [PDF] Renderer: WeasyPrint (Pango/HarfBuzz)")
-        return True
-    except Exception as exc:
-        print(f"  [PDF] WeasyPrint failed: {exc}")
-        return False
+        while font_size >= min_size:
+            try:
+                f = ImageFont.truetype(font_path, font_size)
+            except Exception:
+                f = ImageFont.load_default()
+            probe = ImageDraw.Draw(PILImage.new("RGBA", (1, 1)))
+            tb = probe.textbbox((0, 0), text, font=f)
+            tw, th = tb[2] - tb[0], tb[3] - tb[1]
+            if tw <= canvas_w * 0.98 and th <= canvas_h * 0.98:
+                font_obj = f
+                break
+            font_size -= 1
+        if font_obj is None:
+            font_obj = ImageFont.load_default()
+    except Exception:
+        font_obj = ImageFont.load_default()
 
+    # Draw onto transparent canvas, left-aligned, vertically centred
+    stamp = PILImage.new("RGBA", (canvas_w, canvas_h), (255, 255, 255, 0))
+    draw  = ImageDraw.Draw(stamp)
 
-def _render_pdf_playwright(html: str, output_path: str) -> bool:
-    """Render via Playwright/Chromium (Blink/HarfBuzz). Returns True on success."""
-    try:
-        from playwright.sync_api import sync_playwright
-        with sync_playwright() as p:
-            browser = p.chromium.launch()
-            page    = browser.new_page()
-            page.set_content(html, wait_until="networkidle")
-            page.pdf(
-                path=output_path,
-                format="A4",
-                print_background=True,
-                margin={"top": "0", "bottom": "0", "left": "0", "right": "0"},
-            )
-            browser.close()
-        print("  [PDF] Renderer: Playwright/Chromium (Blink/HarfBuzz)")
-        return True
-    except Exception as exc:
-        print(f"  [PDF] Playwright failed: {exc}")
-        return False
+    tb = draw.textbbox((0, 0), text, font=font_obj)
+    tw, th = tb[2] - tb[0], tb[3] - tb[1]
+    x = 0                               # left-aligned (matches document layout)
+    y = max(0, (canvas_h - th) // 2) - tb[1]   # vertically centred
+    draw.text((x, y), text, font=font_obj, fill=(0, 0, 0, 255))
 
-
-def _render_pdf_wkhtmltopdf(html: str, output_path: str) -> bool:
-    """Render via wkhtmltopdf (WebKit). Returns True on success."""
-    try:
-        import subprocess, tempfile
-        with tempfile.NamedTemporaryFile(suffix=".html", delete=False,
-                                         mode="w", encoding="utf-8") as fh:
-            fh.write(html)
-            tmp_html = fh.name
-        result = subprocess.run(
-            ["wkhtmltopdf", "--quiet",
-             "--page-size", "A4",
-             "--margin-top", "0", "--margin-bottom", "0",
-             "--margin-left", "0", "--margin-right", "0",
-             "--enable-local-file-access",
-             tmp_html, output_path],
-            capture_output=True, timeout=60,
-        )
-        os.unlink(tmp_html)
-        if result.returncode == 0 and os.path.exists(output_path):
-            print("  [PDF] Renderer: wkhtmltopdf (WebKit)")
-            return True
-        print(f"  [PDF] wkhtmltopdf exit {result.returncode}: {result.stderr[:200]}")
-        return False
-    except Exception as exc:
-        print(f"  [PDF] wkhtmltopdf failed: {exc}")
-        return False
-
-
-def _render_pdf_reportlab_fallback(
-    segments: List[dict],
-    output_path: str,
-    image_size: Tuple[int, int],
-) -> None:
-    """
-    Last-resort ReportLab renderer.
-    Text segments render as crop images (no shaping artifacts, always legible).
-    Visual segments render as their crop image.
-    Correct Khmer shaping is NOT possible via this path.
-    """
-    from reportlab.pdfgen import canvas as rl_canvas
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib.utils import ImageReader
-
-    img_w, img_h = image_size
-    page_w, page_h = A4
-    scale    = min(page_w / img_w, page_h / img_h)
-    offset_x = (page_w - img_w * scale) / 2.0
-    offset_y = (page_h - img_h * scale) / 2.0
-
-    c = rl_canvas.Canvas(output_path, pagesize=A4)
-    for seg in segments:
-        bbox = seg.get("bbox")
-        crop = seg.get("crop")
-        if not bbox or crop is None:
-            continue
-        x1, y1, x2, y2 = bbox
-        pdf_x = offset_x + x1 * scale
-        pdf_y = page_h - offset_y - y2 * scale
-        pdf_w = max(1.0, (x2 - x1) * scale)
-        pdf_h = max(1.0, (y2 - y1) * scale)
-        try:
-            c.drawImage(
-                ImageReader(io.BytesIO(_to_png_bytes(crop))),
-                float(pdf_x), float(pdf_y),
-                width=float(pdf_w), height=float(pdf_h),
-                preserveAspectRatio=False, mask="auto",
-            )
-        except Exception:
-            pass
-    c.save()
-    print("  [PDF] Renderer: ReportLab (crop-image fallback — Khmer shaping not supported)")
+    # Downsample to target size with LANCZOS for clean sub-pixel rendering
+    stamp = stamp.resize((box_w, box_h), PILImage.LANCZOS)
+    return stamp
 
 
 def save_pdf(
     segments: List[dict],
     output_path: str,
     image_size: Tuple[int, int],
+    image_path: Optional[str] = None,
 ) -> None:
     """
-    Generate a PDF with correct Khmer OpenType shaping.
+    Generate a PDF with correctly shaped Khmer text.
 
-    Tries renderers in order of shaping quality:
-      1. WeasyPrint  (pip install weasyprint)   — Pango + HarfBuzz
-      2. Playwright  (pip install playwright)   — Chromium + HarfBuzz
-      3. wkhtmltopdf (system binary)            — WebKit
-      4. ReportLab                              — crop-image fallback
+    Layers (bottom → top)
+    ─────────────────────
+    1. Original scan image  — preserves logos, seals, stamps, visual regions
+    2. White erase rect     — hides blurry original text at each text bbox
+    3. PIL text stamp       — OCR text rendered via FreeType (correct shaping)
+    4. Invisible text       — zero-alpha text makes the file searchable
 
-    All three browser-engine paths use HarfBuzz which applies Khmer GSUB
-    (coeng substitution) and GPOS (mark positioning) rules correctly.
+    Args:
+        segments:   Segment list from the OCR pipeline.
+        output_path: Destination .pdf path.
+        image_size:  (width, height) of the source image in pixels.
+        image_path:  Path to the original source image.  Required for the
+                     background layer.  If None or missing, the background
+                     is omitted and text bboxes are drawn on a white page.
     """
-    html = _build_pdf_html(segments, image_size)
+    from reportlab.pdfgen import canvas as rl_canvas
+    from reportlab.lib.utils import ImageReader
+    from reportlab.lib.colors import Color, white
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
 
-    if _render_pdf_weasyprint(html, output_path):
-        pass
-    elif _render_pdf_playwright(html, output_path):
-        pass
-    elif _render_pdf_wkhtmltopdf(html, output_path):
-        pass
+    img_w, img_h = image_size
+
+    # PDF page dimensions = source image dimensions (1 pt = 1 px).
+    # This eliminates all coordinate scaling — bbox pixels map directly to
+    # PDF points with a single Y-axis flip (PDF Y=0 is bottom-left).
+    page_w, page_h = float(img_w), float(img_h)
+
+    # ── font setup ─────────────────────────────────────────────────────────
+    font_path = _find_khmer_ttf()
+    if font_path:
+        try:
+            pdfmetrics.registerFont(TTFont("KhmerInvis", font_path))
+            invis_font = "KhmerInvis"
+            print(f"  [PDF] Invisible text font: {font_path}")
+        except Exception:
+            invis_font = "Helvetica"
     else:
-        print("  [PDF] All shaping renderers failed — using ReportLab crop-image fallback")
-        _render_pdf_reportlab_fallback(segments, output_path, image_size)
+        invis_font = "Helvetica"
+        print("  [PDF] No Khmer font found — invisible text layer uses Helvetica")
 
+    c = rl_canvas.Canvas(output_path, pagesize=(page_w, page_h))
+
+    # ── Layer 1: background image ───────────────────────────────────────────
+    has_bg = image_path and os.path.exists(str(image_path))
+    if has_bg:
+        c.drawImage(str(image_path), 0, 0, width=page_w, height=page_h)
+    else:
+        # No background: fill white so visual segments show their crop
+        c.setFillColor(white)
+        c.rect(0, 0, page_w, page_h, fill=1, stroke=0)
+        # Draw visual (image) segments explicitly when no background is available
+        for seg in segments:
+            if seg["type"] != "image":
+                continue
+            bbox = seg.get("bbox")
+            crop = seg.get("crop")
+            if not bbox or crop is None:
+                continue
+            x1, y1, x2, y2 = bbox
+            pdf_y = page_h - y2          # flip Y axis
+            try:
+                c.drawImage(
+                    ImageReader(io.BytesIO(_to_png_bytes(crop))),
+                    float(x1), float(pdf_y),
+                    width=float(x2 - x1), height=float(y2 - y1),
+                    preserveAspectRatio=False, mask="auto",
+                )
+            except Exception as exc:
+                print(f"  [PDF] skipped visual segment at {bbox}: {exc}")
+
+    # ── Layers 2–4: process each text segment ──────────────────────────────
+    ERASE_PAD = 2   # extra pixels around bbox for the white erase rect
+
+    for seg in segments:
+        if seg["type"] != "text":
+            continue
+
+        text  = seg["text"].strip()
+        bbox  = seg.get("bbox")
+        label = seg.get("label", "Text")
+        if not text or not bbox:
+            continue
+
+        x1, y1, x2, y2 = bbox
+        box_w = max(1, int(x2 - x1))
+        box_h = max(1, int(y2 - y1))
+        # PDF Y-axis is bottom-up; y1/y2 are measured from the top of the image
+        pdf_y_bottom = page_h - y2      # bottom-left anchor for ReportLab
+
+        # ── Layer 2: white erase ───────────────────────────────────────────
+        c.setFillColor(white)
+        c.setStrokeColor(white)
+        c.rect(
+            x1 - ERASE_PAD,
+            pdf_y_bottom - ERASE_PAD,
+            box_w + ERASE_PAD * 2,
+            box_h + ERASE_PAD * 2,
+            fill=1, stroke=1,
+        )
+
+        # ── Layer 3: PIL text stamp (correctly shaped Khmer pixels) ────────
+        if font_path:
+            try:
+                bold   = label in BOLD_LABELS
+                italic = label in ITALIC_LABELS
+                stamp  = _make_text_stamp(
+                    text, box_w, box_h, font_path,
+                    bold=bold, italic=italic,
+                )
+                buf = io.BytesIO()
+                stamp.save(buf, format="PNG")
+                buf.seek(0)
+                c.drawImage(
+                    ImageReader(buf),
+                    float(x1), float(pdf_y_bottom),
+                    width=float(box_w), height=float(box_h),
+                    mask="auto",
+                )
+            except Exception as exc:
+                print(f"  [PDF] text stamp failed at {bbox}: {exc}")
+        else:
+            # No font available — keep the crop image so something is visible
+            crop = seg.get("crop")
+            if crop:
+                try:
+                    c.drawImage(
+                        ImageReader(io.BytesIO(_to_png_bytes(crop))),
+                        float(x1), float(pdf_y_bottom),
+                        width=float(box_w), height=float(box_h),
+                        preserveAspectRatio=False, mask="auto",
+                    )
+                except Exception:
+                    pass
+
+        # ── Layer 4: invisible text (searchable / copy-paste) ──────────────
+        # alpha=0 makes it transparent; the font must be registered or
+        # ReportLab will use Helvetica which still encodes the codepoints.
+        invis_sz = max(4.0, box_h * 0.70)
+        try:
+            c.setFont(invis_font, invis_sz)
+        except Exception:
+            c.setFont("Helvetica", invis_sz)
+        c.setFillColor(Color(0, 0, 0, alpha=0))
+        try:
+            c.drawString(float(x1), float(pdf_y_bottom) + box_h * 0.15, text)
+        except Exception:
+            pass
+
+    c.save()
     print(f"[Formatter] PDF  → {output_path}")
 
 
@@ -719,6 +705,7 @@ def save_output(
     segments: List[dict],
     output_path: str,
     image_size: Optional[Tuple[int, int]] = None,
+    image_path: Optional[str] = None,
 ) -> None:
     ext = Path(output_path).suffix.lower()
     fn  = _FORMAT_MAP.get(ext)
@@ -727,9 +714,13 @@ def save_output(
         fn, output_path = save_txt, str(Path(output_path).with_suffix(".txt"))
 
     import inspect
-    if "image_size" in inspect.signature(fn).parameters:
+    sig_params = inspect.signature(fn).parameters
+    kwargs: dict = {}
+    if "image_size" in sig_params:
         if image_size is None:
             raise ValueError(f"image_size=(w,h) required for '{ext}'")
-        fn(segments, output_path, image_size)
-    else:
-        fn(segments, output_path)
+        kwargs["image_size"] = image_size
+    if "image_path" in sig_params:
+        kwargs["image_path"] = image_path
+
+    fn(segments, output_path, **kwargs)

@@ -191,7 +191,7 @@ class KhmerOCRPipeline:
 
         if output_path:
             print(f"\nStep 3: Saving → {output_path}")
-            save_output(segments, output_path, image_size=image_size)
+            save_output(segments, output_path, image_size=image_size, image_path=image_path)
 
         return final_text
 
