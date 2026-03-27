@@ -160,7 +160,7 @@ class Merger(nn.Module):
         return enc_batch, mask
     
 class TransformerDecoderWrapper(nn.Module):
-    def __init__(self, vocab_size, emb_dim, nhead=8, num_layers=3, pad_idx=0, max_len=256):
+    def __init__(self, vocab_size, emb_dim, nhead=8, num_layers=3, pad_idx=0, max_len=512):
 
         super().__init__()
 

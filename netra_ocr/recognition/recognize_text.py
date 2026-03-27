@@ -20,8 +20,8 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 # GLOBAL SETTINGS & STATE
 # ==============================================================================
 # Define defaults here so you don't have to pass them every time
-DEFAULT_MODEL_PATH = os.path.join(CURRENT_DIR, "weight", "khmerocr_se_transformer.pth")
-DEFAULT_VOCAB_PATH = os.path.join(CURRENT_DIR, "char2idx.json")
+DEFAULT_MODEL_PATH = os.path.join(CURRENT_DIR, "weight", "khmerocr.pth")
+DEFAULT_VOCAB_PATH = os.path.join(CURRENT_DIR, "char2idx_new.json")
 
 # Global variable to hold the model in memory (Singleton)
 _PREDICTOR_INSTANCE = None
