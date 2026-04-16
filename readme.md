@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/netra.png" width="60%" alt="Netra Lab" />
+  <img src="assets/netra-logo-transparent-new.png" width="60%" alt="Netra Lab" />
 </div>
 
 <hr>
