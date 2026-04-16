@@ -1,7 +1,6 @@
 <div align="center">
   <img src="assets/netra-logo-transparent-new.png" width="60%" alt="Netra Lab" />
 </div>
-
 <hr>
 
 <p align="center">
@@ -147,110 +146,57 @@ TABLE 3: Example of proposed, and baseline model compared with the ground truth.
 *   **The Proposed Model** still retains a slight advantage on short, isolated words even where global context is less critical, outperforming both ResNet and VGG Transformer baseline.
 
 
+## Setup
+
+### Create virtual environment
+```bash
+# Windows
+python -m venv myenv
+.\myenv\Scripts\activate
+
+# Mac/Linux
+python3 -m venv myenv
+source myenv/bin/activate
+```
+
 ### Installation
 ```bash
-git clone https://github.com/netra-ai-lab/Khmer-OCR-CNN-Transformer.git
-cd khmer-ocr-cnn-transformer
-pip install -r requirements.txt
+pip install -v git+https://github.com/netra-ai-lab/Khmer-OCR-CNN-Transformer.git@master
 ```
+
 ---
 ## Inference Usage
 This pipeline performs end-to-end OCR by first detecting text lines using Surya and then recognizing characters using our custom CNN-Transformer model.
 
 ![Inference Pipeline](/assets/inference-pipeline.jpg)
 
-## Prerequisites
-You need to install Surya directly from its GitHub repository to ensure you have the latest detection features, or you just clone our repostiory which already contain surya:
-```bash
-# Install Surya from GitHub
-git clone https://github.com/datalab-to/surya.git
-```
-
 
 ## Local-Inference
+### 1. Command Line Interface (CLI)
+```bash
+netra_ocr --image path/to/your/image.jpg
+```
+
+You can also adjust detection engine, adjust beam, and enable debugging
 
 ```bash
-cd Khmer-OCR-CNN-Transformer
+netra_ocr --image document.png --engine surya --padding 10 --beam 1 --batch_size 16 --debug
 ```
 
-### 1. Textline inference via CLI:
-```bash
-python -m recognition.recognize_text --image "sample.png"
-```
-Advanced Usage:
-Specify a custom model path, vocabulary, beam width, and save the output to a text file.
-```bash
-python -m recognition.recognize_text \
-  --image "sample.png" \
-  --model "checkpoints/model.pth" \
-  --vocab "char2idx.json" \
-  --beam 5 \
-  --output "results/sample_output.txt"
-```
+### CLI Arguments
 
-### 2. Textline inference via Python:
-```python
-from recognition.recognize_text import recognize
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `--image` | `str` | **Required** | Path to the input image file. |
+| `--engine` | `str` | `surya` | Choice of detection engine: `surya` (optimized for textlines) or `custom` (trained layout model). |
+| `--output` | `str` | `ocr_result.txt` | Path to save the final recognized text. |
+| `--padding` | `int` | `6` | Pixels of white-space padding added around each text line. Higher padding can help recognition accuracy. |
+| `--beam` | `int` | `1` | Beam width for recognition. `1` is Greedy Search (fastest). Higher values increase accuracy but decrease speed. |
+| `--batch_size` | `int` | `8` | Number of text lines to process in parallel on the GPU/CPU. |
+| `--debug` | `flag` | `False` | If set, saves every cropped line image and its corresponding text into a `debug_<filename>_<engine>` folder for verification. |
 
-# 1. Basic Usage
-text = recognize("test_images/sample.png")
-print(f"Result: {text}")
 
-# 2. Batch Processing
-images = ["img1.png", "img2.png", "img3.png"]
-for img in images:
-    print(f"{img}: {recognize(img)}")
 
-# 3. Custom Configuration
-text_custom = recognize(
-    "test_image.png", 
-    beam_width=5, 
-    model_path="checkpoints/experimental_model.pth"
-)
-```
-
-### 3. Image inference via Python:
-```bash
-python inference.py
-```
-
-To recognize a different document, open inference.py in your text editor. Scroll to the very bottom of the file (inside the if __name__ == "__main__": block) and change the image_path variable:
-
-```python
-# ===================================================
-# RUN EXAMPLE
-# ===================================================
-if __name__ == "__main__":
-    # --- CONFIGURATION ---
-    IMAGE_PATH = "test_image.png" # input image
-    MODEL_PATH = "./checkpoints/khmerocr_vgg_lstm_epoch100.pth" # choose model
-    CHAR2IDX_PATH = "char2idx.json" # Tokenizer
-    
-    # Output Folder
-    RESULT_FOLDER = "results"
-
-    # Example Results
-    """"
-    Line 0: នេះជាអត្ថបទភាសាខ្មែរខ្លីមួយ៖
-    Line 1: ប្រទេសកម្ពុជាមានវប្បធម៌ និងប្រវត្តិសាស្ត្រយូរអង្វែង។ ប្រជាជនខ្មែររស់នៅដោយការគោរពប្រពៃណី
-    Line 2: និងអភិរក្សអត្តសញ្ញាណជាតិ។ ការអប់រំ និងបច្ចេកវិទ្យាកំពុងមានគួនាទីសំខាន់ក្នុងការអភិវឌ្ឍសង្គម
-    Line 3: និងសេដ្ឋកិច្ច។ ‹យុវជនត្រូវបានលើកទឹកចិត្តឲ្យរៀនសូត្រ _និងច្នៃប្រឌិត ‹ដើម្បីរួមចំណែកកសាង
-    Line 4: អនាគតដ៏រីកចម្រើន។
-    Line 5: បើអ្នកចង់បានអត្ថបទវែង ឬមានប្រធានបទជាក់លាក់ ដូចជា វិទ្យាសាស្ត្រ បច្ចេកវិទ្យា ឬអប់រំ ខ្ញុំអាច
-    Line 6: បង្កើតឲ្យបាន។
-    """
-```
-
-### 4. End-to-End Image to Edtiable PDF
-In order to automatically convert an image directly to PDF file while preserving the layout structure, execute the script below:
-```bash
-python inference_pdf.py
-```
-Below is the original document image and the result of the editable PDF with layout preservation after OCR:
-<p float="left">
-  <img src="./assets/khmer_document_4.jpg" width="40%" />
-  <img src="./assets/pdf_convert.png" width="45%" /> 
-</p>
 
 ## Huggingface-Inference
 1. Setup

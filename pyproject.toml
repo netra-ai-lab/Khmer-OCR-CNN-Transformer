@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "netra-ocr"
+version = "0.1.0"
+description = "Khmer OCR Engine using Squeeze-and-Excitation Transformer Networks for textline recognition, and Surya for textline detection."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Nhem Darayut", email = "darayutnhem009@gmail.com"},
+]
+
+
+dependencies = [
+    "pillow>=10.2.0,<11.0.0",
+    "matplotlib==3.10.7",
+    "numpy",
+    "opencv-python",
+    "tqdm",
+    "datasets",
+    "transformers>=4.47.0,<5.0.0",  
+    "torch>=2.7.0,<3.0.0",         
+    "torchvision",
+    "reportlab>=4.0.4",
+    "python-docx",
+    "surya-ocr==0.17.0",           
+    "safetensors",
+]
+
+
+[project.scripts]
+netra_ocr = "netra_ocr.ocr_engine:main"
+
+[tool.setuptools]
+packages = ["netra_ocr", "netra_ocr.detection", "netra_ocr.recognition"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"netra_ocr.detection" = ["det-b0/*"]
+"netra_ocr.recognition" = ["weight/*", "model/*.py", "*.json"]
